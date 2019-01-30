@@ -1,7 +1,9 @@
 <template>
   <div class="graph">
-    <h2>Bar Chart With D3 </h2>
-    <svg id="bar-chart"> </svg>>
+    <h2>Inside the Bar component </h2>
+    <p>{{someData}}</p>
+    <!--<p>{{data}}</p>-->
+    <svg id="bar-chart"> </svg>
   </div>
 </template>
 
@@ -13,49 +15,57 @@
       //        data2: [80, 120, 60, 150, 200]
       //    }
       // },
-      methods: {
-        drawChart: function(data) {
-          console.log('drawchart')
-          console.log(data)
-        }
-      },
-      // dhw here 'my data is recognized as undefined, have to work on this
-      // it may be that mounted happens before data is set up
-      // it may be that props from the parent need to be involved
-      // this.data didn't work below, data is not set up
+      // dhw here
+      // PASSED values go in props and are bound in the parent
       mounted: function () {
-        var d3=require('d3');
-        var barHeight = 20;
-
+        var d=this.data
         console.log('mounted')
-        console.log(this.data)
-        // var bar = d3.select('#bar-chart')
-        //   .selectAll('rect')
-        //   .data(data2)
-        //   .enter()
-        //   .append('rect')
-        //   .attr('width', function (d) {
-        //     return d;
-        //   })
-        //   .attr('height', barHeight - 1)
-        //   .attr("fill", function (d) {
-        //     return colorPicker(d)
-        //   })
+        console.log(d)
+        this.drawChart(d)
+      },
+      methods: {
+        drawChart: function (data) {
+          var d3 = require('d3');
+          var barHeight = 20;
 
+          // console.log('mounted in bar (show this.someData)')
+          // console.log(this.someData)
+           console.log('this.someData')
+           console.log(this.someData)
+          d3.select('#bar-chart').html(""); // I don't know why, but I needed to do this for the graph torefresh
+          var bar = d3.select('#bar-chart')
+            .selectAll('rect')
+            .data(this.someData )
+            .enter()
+            .append('rect')
+            .attr('width', function (d) {
+              return d;
+            })
+            .attr('height', barHeight - 1)
+            .attr("fill", function (d) {
+              return colorPicker(d)
+            })
+            .attr('transform', function (d, i) {
+              return "translate(0," + i * barHeight + ")";
+            });
 
-        function colorPicker(v) {
-          if (v < 120) {
-            return "#666666"
-          }
-          else {
-            return "#FF0033";
+          function colorPicker(v) {
+            if (v < 120) {
+              return "#666666"
+            }
+            else {
+              return "#FF0033";
+            }
           }
         }
       },
-      props: ['data'],
+      // see : https://stackoverflow.com/questions/32481580/vue-js-get-data-from-parent-vue
+      props: ['some-data'],
       // 1) when new data is updated, the watch will call drawChart and send the data to the method
       watch: {
-        data: function(newData) {
+        someData: function(newData) {
+          console.log('newData')
+          console.log(newData)
           this.drawChart(newData);
         }
       }
